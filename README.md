@@ -15,6 +15,18 @@ Bluffmaster is a **survive-the-longest** card game. Players take turns either de
 
 ---
 
+## 🃏 Combination Family Taxonomy Table
+
+| **Family**              | **Family Naming Rule**               | **Family Rule**                                                           | **Subset Naming Rule**                           | **Subset Rule**                                                               | **Example Name**                | **Example Cards**             |
+|-------------------------|--------------------------------------|---------------------------------------------------------------------------|--------------------------------------------------|--------------------------------------------------------------------------------|-------------------------------|------------------------------|
+| **Set**                 | `Set {x}`                            | Hand contains exactly **x cards** of the **same rank**                    | `Set {x} {Rank}`                                 | Contains exactly x cards of the given rank                                     | `Set 3 Jack`                  | J♠ J♦ J♣ 7♥ 2♠                |
+| **Double Set**          | `Double Set {x} {y}`                 | Hand contains **x of one rank** and **y of another rank**                 | `Double Set {x} {Rank1} {y} {Rank2}`             | Contains x cards of Rank1 and y cards of Rank2                                 | `Double Set 3 Jack 2 7`       | J♠ J♦ J♣ 7♥ 7♠                |
+| **Straight of x**       | `{x}-Straight`                       | Hand contains **x consecutive ranks**, any suits                          | `{x}-Straight of {StartingRank}`                | Contains x consecutive ranks starting from StartingRank                        | `5-Straight of 5`             | 5♠ 6♦ 7♣ 8♠ 9♥                |
+| **Flush of x**          | `{x}-Flush`                          | Hand contains **x cards** of the **same suit**, any ranks                 | `{x}-Flush of {HighestRank}-{Suit}`             | x cards of given suit, highest card is HighestRank                             | `5-Flush of A-Hearts`         | 2♥ 6♥ 9♥ J♥ A♥                |
+| **Straight Flush of x** | `{x}-Straight Flush`                 | Hand contains **x consecutive ranks** of the **same suit**                | `{x}-Straight Flush {StartingRank}-{Suit}`      | x consecutive cards starting at StartingRank, all in the same suit             | `5-Straight Flush 9-Clubs`    | 9♣ 10♣ J♣ Q♣ K♣              |
+
+---
+
 ## 📜 Rules
 
 ### 🔧 Setup
