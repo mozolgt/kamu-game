@@ -3,7 +3,7 @@
 import random
 import csv
 from collections import Counter, defaultdict
-from typing import List, Tuple, Literal
+from typing import List
 
 RANK_ORDER = {'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8,
               '9': 9, '10': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14}
@@ -117,6 +117,6 @@ def export_to_csv(data: dict, filename: str):
             writer.writerow([hand_size, family[0], family[1:], count])
 
 if __name__ == "__main__":
-    stats = simulate_rounds(1000)
+    stats = simulate_rounds(10000)
     export_to_csv(stats, "simulation_results.csv")
     print("Simulation results exported to 'simulation_results.csv'")
