@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102820">
+  <meta name="description" content="A playable debug table for Bluffmaster. Inspect dealt cards, declarations, and challenges.">
+  <title>Bluffmaster · Debug Table</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="engine/cards.js"></script>
+  <script defer src="engine/combinations.js"></script>
+  <script defer src="engine/match.js"></script>
+  <script defer src="engine/odds.js"></script>
+  <script defer src="engine/easy-bot.js"></script>
+  <script defer src="presentation.js"></script>
+  <script defer src="declaration.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <span class="wordmark"><span aria-hidden="true">♠</span> Bluffmaster</span>
+      <button class="button header-button" id="open-setup" type="button">New match</button>
+    </div>
+  </header>
+  <main class="workspace">
+    <div class="page-heading">
+      <div>
+        <h1>Debug table</h1>
+        <p>Play with Easy bots or control every seat yourself.</p>
+      </div>
+      <dl class="stats">
+        <div><dt>Round</dt><dd id="round-number"></dd></div>
+        <div><dt>Cards dealt</dt><dd id="pool-size"></dd></div>
+        <div><dt>Hand limit</dt><dd id="hand-limit"></dd></div>
+        <div><dt>Round family</dt><dd id="round-family"></dd></div>
+      </dl>
+    </div>
+
+    <div class="layout">
+      <div class="game-column">
+        <section class="table" aria-label="Game table">
+          <div class="seat-row" id="seats-top"></div>
+          <div class="table-center" aria-live="polite" id="table-center"></div>
+          <div class="seat-row" id="seats-bottom"></div>
+        </section>
+
+        <section id="action-panel" class="panel action-panel" aria-label="Turn controls">
+          <div id="turn-controls">
+            <div class="turn-header">
+              <div>
+                <h2 id="turn-title"></h2>
+                <p id="active-hand-label">Your hand</p>
+              </div>
+              <div class="card-grid" id="active-hand" aria-label="Active player's cards"></div>
+            </div>
+            <div class="turn-actions" id="human-actions">
+              <div id="declaration-picker">
+                <div class="wheel-toolbar">
+                  <button class="button primary" id="declare" type="button" aria-expanded="false" aria-controls="declaration-wheel">Declare</button>
+                </div>
+                <div class="declaration-wheel" id="declaration-wheel" role="region" aria-label="Declaration wheel" hidden>
+                  <div class="wheel-heading">
+                    <h3 id="wheel-step" aria-live="polite">Choose a family</h3>
+                    <button class="close-button" id="close-wheel" type="button" aria-label="Close declaration wheel">×</button>
+                  </div>
+                  <div class="wheel-disc">
+                    <svg class="wheel-face" viewBox="0 0 100 100" aria-hidden="true"></svg>
+                    <div id="wheel-families" class="wheel-choices" role="group" aria-label="Combination families"></div>
+                    <div id="wheel-options" class="wheel-choices" role="group" aria-labelledby="wheel-step"></div>
+                    <button class="wheel-challenge" id="wheel-challenge" type="button">Call bluff</button>
+                  </div>
+                  <div class="wheel-trail" id="wheel-trail" role="group" aria-label="Selected parameters" hidden></div>
+                  <p class="wheel-summary" id="wheel-summary" aria-live="polite" hidden></p>
+                  <button class="button primary" id="confirm-bid" type="button" hidden>Confirm declaration</button>
+                </div>
+              </div>
+            </div>
+            <div class="turn-actions bot-actions" id="bot-actions" hidden>
+              <label><input id="bot-autoplay" type="checkbox"> Autoplay bots</label>
+              <button class="button primary" id="bot-step" type="button">Step bot</button>
+            </div>
+          </div>
+          <div id="review-controls" hidden tabindex="-1"></div>
+        </section>
+        <section class="panel declaration-history" aria-labelledby="history-heading">
+          <div class="history-heading">
+            <h2 id="history-heading">Declaration history</h2>
+            <span title="Any rank or suit">✦ Any rank or suit</span>
+          </div>
+          <div id="declaration-history"></div>
+        </section>
+      </div>
+
+      <details class="panel inspector" id="inspector" open>
+        <summary>Inspector</summary>
+        <div class="inspector-body">
+          <label class="reveal-switch"><input id="reveal" type="checkbox" checked> Show all dealt cards</label>
+          <div class="view-buttons" role="group" aria-label="Inspector view">
+            <button type="button" data-view="pool" aria-pressed="true">Hands</button>
+            <button type="button" data-view="matches" aria-pressed="false">Matches</button>
+            <button type="button" data-view="odds" aria-pressed="false">Odds</button>
+            <button type="button" data-view="bots" aria-pressed="false">Bots</button>
+            <button type="button" data-view="log" aria-pressed="false">Log</button>
+          </div>
+          <div id="match-search-wrap" hidden>
+            <label for="match-search" class="sr-only">Filter combinations</label>
+            <input type="search" id="match-search" placeholder="Search combinations">
+          </div>
+          <div id="odds-controls" hidden>
+            <label>Player's hand
+              <select id="odds-seat"></select>
+            </label>
+            <p id="odds-context" class="odds-note"></p>
+            <p class="odds-note">Assumes the other dealt cards are random draws from the unseen deck.</p>
+            <label for="odds-search" class="sr-only">Search combinations by name</label>
+            <input type="search" id="odds-search" placeholder="Search, e.g. six hearts">
+          </div>
+          <div class="bot-inspector-controls" id="bot-inspector-controls" hidden>
+            <label>Decision
+              <select id="bot-decision"></select>
+            </label>
+          </div>
+          <div id="inspector-content" class="inspector-content"></div>
+          <div class="odds-pagination" id="odds-pagination" hidden>
+            <button type="button" id="odds-prev">Previous</button>
+            <span id="odds-page" aria-live="polite"></span>
+            <button type="button" id="odds-next">Next</button>
+          </div>
+          <div class="deal-meta">
+            <span id="scenario-label"></span>
+            <span>Seed <code id="seed-label"></code></span>
+          </div>
+        </div>
+      </details>
+    </div>
+  </main>
+
+  <dialog id="setup">
+    <form id="setup-form">
+      <div class="dialog-heading">
+        <h2>New match</h2>
+        <button type="button" class="close-button" id="close-setup" aria-label="Close">×</button>
+      </div>
+      <label>Deal
+        <select name="scenario">
+          <option value="standard">Standard opening</option>
+          <option value="flush">Six hearts · 40-card pool</option>
+          <option value="elimination">Player 1 at the hand limit</option>
+        </select>
+      </label>
+      <p class="scenario-hint" id="scenario-hint"></p>
+      <div class="setup-fields">
+        <label>Players
+          <input type="number" name="players" min="2" max="10" required value="4">
+        </label>
+        <label>Easy bots
+          <input type="number" name="bots" min="0" max="4" required value="0">
+        </label>
+        <label>Seed <span class="optional">(optional)</span>
+          <input type="text" name="seed" maxlength="40" placeholder="Random">
+        </label>
+      </div>
+      <p class="setup-cap" id="setup-cap" aria-live="polite"></p>
+      <button class="button primary" type="submit">Start match</button>
+    </form>
+  </dialog>
+</body>
+</html>
